@@ -1,0 +1,16 @@
+file = block
+block = [statement]
+statement = expression | createvar | deffun | setvar | setpointer | if | ifelse | while | return | break
+expression = INT | STRING | functioncall | OPENPARAN + expression + CLOSEPARAN | operation | pointer | LABEL
+createvar = VAR + LABEL + ?(EQUALS + expression)
+deffun = FUN + label + OPENPARAN + [LABEL + LABEL + COMMA] + CLOASAEPARAN + RETURNS + LABEL + OPENCURLY + block + CLOSECURLY
+setvar = LABEL + EQUALS + expression
+setpointer = AT + expression + EQUALS + expression
+if = IF + expression + OPENCURLY + block + CLOSECURLY
+ifelse = IF + expression + OPENCURLY + block + CLOSECURLY + ELSE + OPENCURLY + block + CLOSECURLY
+while = WHILE + expression + OPENCURLY + block + CLOSECURLY
+return = RETURN + ?expression
+break + BREAK
+functioncall = LABEL + OPENPARAN + ?(epression + ?[COMMAN + expression]) + CLOSEPARAN
+operation = EXPRESSION + (OPERAN | LABEL) + EXPRESSION
+pointer = AT + expression

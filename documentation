@@ -1,0 +1,41 @@
+Instruction:
+
+00: lod reg  					;load. uses a0, a1
+01: sto reg						; store. uses a0, a1
+02: add			
+03: sub
+04: in reg						; input
+05: out reg						; output
+06: tac reg 					;	jump if negative uses a0, a1
+07: jmp								; jump
+08: and
+09: or
+0a: nor
+0b: stp
+0c: sftr
+0d: sftl
+0e: mov reg1 reg2   	; reg2 = reg1
+0f: raw reg d
+
+
+
+
+Registers:
+
+00: x
+01: y
+02: o
+03: c
+04: a0 //address thingy
+05: a1
+06: ip //input channel
+07: op //output channel
+08: p0 //program counter
+09: p1 //program counter
+0a: s0 //stack pointer
+0b: s1 //stack pointer
+0c: se0 //stack end
+0d: se1 //stack end
+0e: ss0 //stack size
+0f: ss1 //stack size
+10-1f: general

@@ -1,0 +1,51 @@
+page = block
+
+block = [statement]
+
+statement = expression | createVar | defFunc | setVar | setPointer | if | ifElse | while | return | break
+
+type = varType | templateType | functionType | templateFunctionType
+
+expression = float | int | string | functionCall | operation | pointer | getVar 
+
+defParam = LABEL + COLON + type
+
+float = INT + PERIOD + INT
+
+int = INT
+
+string = STRING_NODE
+
+functionCall = LABEL + OPENPARAN + [defParam] + CLOSEPARAN
+
+operation = expression + OPERAND + expression //first expression exludes another operation
+
+pointer = AT + expression
+
+getVar = LABEL
+
+varType = LABEL
+
+templateType = LABEL + OPERAND.< + [type] + OPERAND.>
+
+functionType = OPENPARAN + [type] + CLOSEPARAN + RETURNS + type
+
+templateFunctionType = OPENPARAN + [type] + CLOSEPARAN + OPERAND.< + [type] + OPERAND.> + RETURNS + type
+
+createVar = VAR + LABEL + ?(COLON + type) + EQUALS + expression
+
+defFunc = FUNC + LABEL + OPENPARAN + [defParam] + CLOSEPARAN + RETURNS + type + OPENCURLY + block + CLOSECURLY
+
+setVar = label + EQUALS + expression
+
+setPointer = AT + expression + EQUALS + expression
+
+if = IF + expression + OPENCURLY + block + CLOSECURLY
+
+ifElse = IF + expression + OPENCURLY + block + CLOSECURLY + ELSE + OPENCURLY + block + CLOSECURLY
+
+while = WHILE + expression + OPENCURLY + block + CLOSECURLY
+
+return = RETURN + expression
+
+break = BREAK
