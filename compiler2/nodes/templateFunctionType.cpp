@@ -5,9 +5,9 @@
 
 using namespace std;
 
-TemplateFunctionType::TemplateFunctionType(): FunctionTypeNode() {};
+TemplateFunctionTypeNode::TemplateFunctionTypeNode(): FunctionTypeNode() {};
 
-TemplateFunctionType::TemplateFunctionType(Token *tokens) {
+TemplateFunctionTypeNode::TemplateFunctionTypeNode(Token *tokens) {
 	int tempSize = 0;
 
 	if (tokens->type == OPENPARAN) {
@@ -104,7 +104,7 @@ TemplateFunctionType::TemplateFunctionType(Token *tokens) {
 	type = TEMPLATEFUNCTIONTYPE_NODE;
 };
 
-TemplateFunctionType::operator string() const {
+TemplateFunctionTypeNode::operator string() const {
 	string result = "";
 	result += "params:\n";
 	
@@ -129,7 +129,7 @@ TemplateFunctionType::operator string() const {
 	return "Template function type {\n" + indentString(result) + "\n}";
 };
 
-vector<Node*> TemplateFunctionType::getChildren() {
+vector<Node*> TemplateFunctionTypeNode::getChildren() {
 	vector<Node*> result;
 
 	for (int i = 0; i < params.size(); i++) {
@@ -141,4 +141,11 @@ vector<Node*> TemplateFunctionType::getChildren() {
 	result.push_back(returnType);
 
 	return result;
+};
+
+bool TemplateFunctionTypeNode::operator == (const TemplateFunctionTypeNode &b) {
+	bool b1 = params == b.params;
+	bool b2 = returnType == b.returnType;
+	bool b3 = templateParams == b.templateParams;
+	return b1 && b3 && b3;
 };

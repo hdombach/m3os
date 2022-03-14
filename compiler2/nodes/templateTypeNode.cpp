@@ -78,3 +78,9 @@ vector<Node*> TemplateTypeNode::getChildren() {
 
 	return result;
 };
+
+bool TemplateTypeNode::operator == (const TemplateTypeNode &b) {
+	bool b1 = name == b.name;
+	bool b2 = types == b.types;
+	return b1 && b2;
+};

@@ -81,7 +81,7 @@ DefFuncNode::DefFuncNode(Token *tokens): StatementNode() {
 	for (int i = 0; i < params.size(); i++) {
 		params[i].parent = this;
 	}
-	returnType.parent = this;
+	returnType->parent = this;
 	block.parent = this;
 
 	tokenSize = tempSize;
@@ -108,14 +108,14 @@ DefFuncNode::operator string() const {
 
 };
 
-TypeNode DefFuncNode::getFuncType() {
-	FunctionTypeNode result;
-	result.returnType = &returnType;
-	result.position = position;
+TypeNode *DefFuncNode::getFuncType() {
+	FunctionTypeNode *result;
+	result->returnType = returnType;
+	result->position = position;
 
 	for (int i = 0; i < params.size(); i++) {
 		DefParamNode param = params[i];
-		result.params.push_back(param.varType);
+		result->params.push_back(param.varType);
 	}
 
 	return result;
@@ -127,7 +127,7 @@ vector<Node*> DefFuncNode::getChildren() {
 	for (int i = 0; i < params.size(); i++) {
 		result.push_back(&params[i]);
 	}
-	result.push_back(&returnType);
+	result.push_back(returnType);
 	result.push_back(&block);
 
 	return result;

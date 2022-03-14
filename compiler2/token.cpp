@@ -231,6 +231,7 @@ Token Token::createSpecial(string s) {
 	m.push_back(make_tuple(".", PERIOD));
 	m.push_back(make_tuple(":", COLON));
 	m.push_back(make_tuple("@", AT));
+	m.push_back(make_tuple("&", POINTER));
 
 	for (int i = 0; i < m.size(); i++) {
 		string name;
@@ -315,7 +316,7 @@ std::string tokenTypeString(TokenType t) {
 		case END: return "END";
 		case COLON: return "COLON";
 		case RETURNS: return "RETURNS";
-		case AT: return "AT";
+		case POINTER: return "POINTER";
 		case AND: return "AND";
 		default: return "ERROR";
 	}

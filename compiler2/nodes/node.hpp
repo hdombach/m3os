@@ -25,6 +25,7 @@ enum NodeType {
 	FUNCTIONCALL_NODE,
 	OPERATION_NODE,
 	POINTER_NODE,
+	GETPOINTER_NODE,
 	DEFPARAM_NODE,
 	GETVAR_NODE,
 	VARTYPE_NODE,
@@ -48,7 +49,10 @@ public:
 	virtual operator string() const;
 
 	virtual vector<Node*> getChildren();
+	virtual vector<Node*> getNestedChildren(bool includeChildScope=true);
+	virtual vector<BlockNode*> getNestedBlocks();
 	Node *parent;
+	void runFunc(void (*func)(Node *node), bool includeChildScope=true);
 
 protected:
 	vector<Token> getOffset(Token *tokens, int offset);
@@ -62,7 +66,10 @@ class TypeNode: public Node {
 	static TypeNode *create(Token *tokens);
 
 	virtual vector<Node*> getChildren();
+
+	virtual bool operator == (const TypeNode& b);
 };
+
 
 class StatementNode: public Node {
 	public:
@@ -159,6 +166,8 @@ class VarTypeNode: public TypeNode {
 	virtual operator string() const;
 
 	virtual vector<Node*> getChildren();
+
+	virtual bool operator == (const VarTypeNode &b);
 };
 
 //type<inerTypes>
@@ -172,6 +181,8 @@ class TemplateTypeNode: public VarTypeNode {
 	virtual operator string() const;
 
 	virtual vector<Node*> getChildren();
+
+	virtual bool operator == (const TemplateTypeNode &b);
 };
 
 //() -> ()
@@ -186,20 +197,24 @@ class FunctionTypeNode: public TypeNode {
 	virtual operator string() const;
 
 	virtual vector<Node*> getChildren();
+
+	virtual bool operator == (const FunctionTypeNode &b);
 };
 
 //()<> -> ()
-class TemplateFunctionType: public FunctionTypeNode {
+class TemplateFunctionTypeNode: public FunctionTypeNode {
 	public:
 
 	vector<TypeNode*> templateParams;
 
-	TemplateFunctionType(Token *tokens);
-	TemplateFunctionType();
+	TemplateFunctionTypeNode(Token *tokens);
+	TemplateFunctionTypeNode();
 
 	virtual operator string() const;
 
 	virtual vector<Node*> getChildren();
+
+	virtual bool operator == (const TemplateFunctionTypeNode &b);
 };
 	
 
@@ -361,6 +376,8 @@ class FunctionCallNode: public ExpressionNode {
 	operator string() const;
 
 	virtual vector<Node*> getChildren();
+
+	virtual TypeNode *getResultType();
 };
 
 class OperationNode: public ExpressionNode {
@@ -375,6 +392,8 @@ class OperationNode: public ExpressionNode {
 	operator string() const;
 
 	virtual vector<Node*> getChildren();
+
+	virtual TypeNode *getResultType();
 };
 
 class PointerNode: public ExpressionNode {
@@ -387,6 +406,22 @@ class PointerNode: public ExpressionNode {
 	operator string() const;
 
 	virtual vector<Node*> getChildren();
+
+	virtual TypeNode *getResultType();
+};
+
+class GetPointerNode: public ExpressionNode {
+	public:
+	ExpressionNode *expression;
+
+	GetPointerNode(Token *tokens);
+	GetPointerNode();
+
+	operator string() const;
+
+	virtual vector<Node*> getChildren();
+
+	virtual TypeNode *getResultType();
 };
 
 class GetVarNode: public ExpressionNode {
@@ -399,6 +434,8 @@ class GetVarNode: public ExpressionNode {
 	operator string() const;
 
 	virtual vector<Node*> getChildren();
+
+	virtual TypeNode *getResultType();
 };
 
 string nodeTypeString(NodeType t);

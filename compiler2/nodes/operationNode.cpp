@@ -2,6 +2,7 @@
 #include "../util.hpp"
 #include "../error.hpp"
 #include <vector>
+#include "../symbolTable.hpp"
 
 //TODO: add ()
 
@@ -55,4 +56,12 @@ vector<Node*> OperationNode::getChildren() {
 	result.push_back(rightExpression);
 
 	return result;
+};
+
+TypeNode *OperationNode::getResultType() {
+	vector<TypeNode*> types;
+	types.push_back(leftExpression->getResultType());
+	types.push_back(rightExpression->getResultType());
+
+	return getParentBlock()->getTable()->getFunctionReturnType(operation, types);
 };

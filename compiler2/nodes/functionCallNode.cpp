@@ -2,6 +2,7 @@
 #include "../util.hpp"
 #include "../error.hpp"
 #include <vector>
+#include "../symbolTable.hpp"
 
 FunctionCallNode::FunctionCallNode(Token *tokens): ExpressionNode() {
 	int tempSize = 0;
@@ -65,4 +66,14 @@ vector<Node*> FunctionCallNode::getChildren() {
 	};
 
 	return result;
+};
+
+
+
+TypeNode *FunctionCallNode::getResultType() {
+	vector<TypeNode*> types;
+	for (int i = 0; i < expressions.size(); i++) {
+		types.push_back(expressions[i]->getResultType());
+	}
+	return getParentBlock()->getTable()->getFunctionReturnType(name, types);
 };

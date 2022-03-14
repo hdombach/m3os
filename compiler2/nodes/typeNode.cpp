@@ -5,7 +5,7 @@ TypeNode::TypeNode() {};
 TypeNode *TypeNode::create(Token *tokens) {
 	TypeNode *result;
 
-	result = new TemplateFunctionType(tokens);
+	result = new TemplateFunctionTypeNode(tokens);
 	if (result->tokenSize > 0) {
 		return result;
 	} else {
@@ -37,3 +37,7 @@ TypeNode *TypeNode::create(Token *tokens) {
 };
 
 vector<Node*> TypeNode::getChildren() {return vector<Node*>();};
+
+bool TypeNode::operator == (const TypeNode& b) {
+	return false;
+};

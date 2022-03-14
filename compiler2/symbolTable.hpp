@@ -11,19 +11,23 @@ using namespace std;
 class SymbolTable {
 public:
 	SymbolTable *parent;
-	vector<tuple<string, TypeNode>> symbols;
+	vector<tuple<string, TypeNode*>> symbols;
 
 	SymbolTable();
 
 	void addFunctions(BlockNode *block);
 	void addVars(BlockNode *block);
+	void addDefaults();
 
 	TypeNode *getVarType(string name);
-	TypeNode *getFunctionReturnType(string name, vector<TypeNode> params);
+	TypeNode *getFunctionReturnType(string name, vector<TypeNode*> params);
 
 	private:
 	void addVar(CreateVarNode node);
 	void addFunction(DefFuncNode node);
+	vector<TypeNode *> getTypes(string name);
 };
+
+SymbolTable createAllTables(Node *root);
 
 #endif

@@ -1,5 +1,6 @@
 #include "node.hpp"
 #include "../util.hpp"
+#include "../symbolTable.hpp"
 
 GetVarNode::GetVarNode(Token *tokens): ExpressionNode() {
 	int tempSize = 0;
@@ -23,4 +24,8 @@ GetVarNode::operator string() const {
 vector<Node*> GetVarNode::getChildren() {
 	vector<Node*> result;
 	return result;
+};
+
+TypeNode *GetVarNode::getResultType() {
+	return getParentBlock()->getTable()->getVarType(name);
 };

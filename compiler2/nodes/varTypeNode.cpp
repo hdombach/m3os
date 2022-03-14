@@ -18,3 +18,7 @@ VarTypeNode::operator string() const {
 vector<Node*> VarTypeNode::getChildren() {
 	return vector<Node*>();
 };
+
+bool VarTypeNode::operator == (const VarTypeNode &b) {
+	return name == b.name;
+};

@@ -52,6 +52,13 @@ ExpressionNode *ExpressionNode::create(Token *tokens, bool includeOperation) {
 		delete result;
 	}
 
+	result = new GetPointerNode(tokens);
+	if (result->tokenSize > 0) {
+		return result;
+	} else {
+		delete result;
+	}
+
 	result = new GetVarNode(tokens);
 	if (result->tokenSize > 0) {
 		return result;
@@ -69,4 +76,4 @@ ExpressionNode::operator string() const {
 
 vector<Node*> ExpressionNode::getChildren() {return vector<Node*>();};
 
-TypeNode ExpressionNode::getResultType() {return TypeNode();};
+TypeNode *ExpressionNode::getResultType() {return new TypeNode();};

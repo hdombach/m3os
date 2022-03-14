@@ -30,6 +30,7 @@ enum TokenType {
 	COLON,
 	RETURNS,
 	AT,
+	POINTER,
 	AND,
 	OR,
 	ERROR,

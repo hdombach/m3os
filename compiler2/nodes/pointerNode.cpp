@@ -41,3 +41,20 @@ vector<Node*> PointerNode::getChildren() {
 
 	return result;
 };
+
+TypeNode *PointerNode::getResultType() {
+	TypeNode *expressionType = expression->getResultType();
+	if (expressionType->type == TEMPLATETYPE_NODE) {
+		TemplateTypeNode *templateType = (TemplateTypeNode*) expressionType;
+		if (templateType->name == "pointer") {
+			if (templateType->types.size() == 1) {
+				return templateType->types[0];
+			} else {
+				logError("Pointer expression contains more than one type");
+			}
+		} else {
+			logError("Pointer epxression does not contain a pointer");		
+		}
+	}
+	return NULL;
+};

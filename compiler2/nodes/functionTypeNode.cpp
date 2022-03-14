@@ -92,3 +92,10 @@ vector <Node*> FunctionTypeNode::getChildren() {
 
 	return result;
 };
+
+bool FunctionTypeNode::operator == (const FunctionTypeNode &b) {
+	bool b1 = params == b.params;
+	bool b2 = returnType == b.returnType;
+
+	return b1 && b2;
+};
