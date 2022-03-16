@@ -55,6 +55,10 @@ TemplateTypeNode::TemplateTypeNode(Token *tokens) {
 	type = TEMPLATETYPE_NODE;
 };
 
+TemplateTypeNode::TemplateTypeNode(string name, vector<TypeNode*> types): VarTypeNode(name) {
+	this->types = types;
+}
+
 TemplateTypeNode::operator string() const {
 	string result = "";
 

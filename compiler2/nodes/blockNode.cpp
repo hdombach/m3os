@@ -1,6 +1,8 @@
 #include "node.hpp"
 #include "../util.hpp"
 #include <iostream>
+#include "../symbolTable.hpp"
+#include "../error.hpp"
 
 BlockNode::BlockNode(): Node() {};
 
@@ -20,6 +22,8 @@ BlockNode::BlockNode(Token *tokens): Node() {
 	for (int i = 0; i < statements.size(); i++) {
 		statements[i]->parent = this;
 	};
+
+	table = nullptr;
 
 	tokenSize = tempSize;
 	type = BLOCK_NODE;
@@ -52,3 +56,10 @@ vector<Node*> BlockNode::getChildren() {
 SymbolTable *BlockNode::getTable() {
 	return table;
 }
+
+void BlockNode::setTable(SymbolTable *table) {
+	if (this->table != nullptr) {
+		logError("the table block is set more than once");
+	}
+	this->table = table;
+};

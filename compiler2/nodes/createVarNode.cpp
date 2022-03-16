@@ -77,7 +77,11 @@ CreateVarNode::operator string() const {
 };
 
 TypeNode *CreateVarNode::getVarType() {
-	return expression->getResultType();
+	if (valueType != nullptr) {
+		return valueType;
+	} else {
+		return expression->getResultType();
+	}
 };
 
 vector<Node*> CreateVarNode::getChildren() {

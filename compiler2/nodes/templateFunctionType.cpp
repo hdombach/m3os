@@ -104,6 +104,10 @@ TemplateFunctionTypeNode::TemplateFunctionTypeNode(Token *tokens) {
 	type = TEMPLATEFUNCTIONTYPE_NODE;
 };
 
+TemplateFunctionTypeNode::TemplateFunctionTypeNode(vector<TypeNode*> paramTypes, vector<TypeNode*> templateParams, TypeNode *returnType): FunctionTypeNode(paramTypes, returnType) {
+	this->templateParams = templateParams;
+};
+
 TemplateFunctionTypeNode::operator string() const {
 	string result = "";
 	result += "params:\n";

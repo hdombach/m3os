@@ -1,4 +1,5 @@
 #include "node.hpp"
+#include "../util.hpp"
 
 Node::Node() {
 	type = ERROR_NODE;
@@ -55,7 +56,7 @@ BlockNode *Node::getParentBlock() {
 	return (BlockNode*) current;
 };
 
-void Node::runFunc(void (*func)(Node *node), bool includeChildScope) {
+/*void Node::runFunc(void (*func)(Node *node), bool includeChildScope) {
 	if (type == BLOCK_NODE) {
 		return;
 	}
@@ -64,20 +65,22 @@ void Node::runFunc(void (*func)(Node *node), bool includeChildScope) {
 	for (int i = 0; i < children.size(); i++) {
 		children[i]->runFunc(func, includeChildScope);
 	}
-}
+}*/
 
 vector<Node*> Node::getNestedChildren(bool includeChildScope) {
+
 	vector<Node*> result;
-	if (type == BLOCK_NODE && !includeChildScope) {
-		return result;
-	}
 
 	vector<Node*> children = this->getChildren();
-	result.insert(result.end(), children.begin(), children.end());
 
 	for (int i = 0; i < children.size(); i++) {
-		vector<Node*> childChildren = children[i]->getNestedChildren(includeChildScope);
-		result.insert(result.end(), childChildren.begin(), childChildren.end());
+
+		Node *child = children[i];
+		if (!(child->type == BLOCK_NODE && !includeChildScope)) {
+			result.push_back(child);
+			vector<Node*> childChildren = child->getNestedChildren(includeChildScope);
+			result.insert(result.end(), childChildren.begin(), childChildren.end());
+		}
 	}
 
 	return result;
@@ -88,6 +91,7 @@ vector<BlockNode*> Node::getNestedBlocks() {
 	vector<BlockNode*> result;
 
 	for (int i = 0; i < children.size(); i++) {
+
 		Node *child = children[i];
 		if (child->type == BLOCK_NODE) {
 			result.push_back((BlockNode *) child);

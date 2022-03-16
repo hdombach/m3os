@@ -4,17 +4,18 @@
 #include "util.hpp"
 #include "token.hpp"
 #include "nodes/node.hpp"
+#include <sys/signal.h>
 #include <unistd.h>
 #include <vector>
 #include <string>
 #include <signal.h>
 #include <stdlib.h>
 #include "error.hpp"
+#include "symbolTable.hpp"
 
 using namespace std;
 
 void error_handler(int sig) {
-	cout << to_string(sig);
   void *array[10];
   size_t size;
   size = backtrace(array, 10); //get the void pointers for all of the entries
@@ -49,6 +50,12 @@ int main(int argc, char* argv[]) {
 
 	cout << string(*root) + "\n";
 
+	auto tables = createAllTables(root);
+
+	for (int i = 0; i < tables.size(); i++) {
+		auto table = tables[i];
+		cout << string(*table);
+	}
 
 	cout << "Compiled with " + to_string(getErrorLength()) + " errors\n";
 	printErrors();

@@ -37,34 +37,86 @@ enum NodeType {
 
 class BlockNode;
 
+/**
+	*	A generic node for the syntax tree.
+	*/
 class Node {
 public:
+
+	/**
+	* The type for node.
+	*/
 	NodeType type;
+
+	/**
+	*	Description: Where the corresponding text is in the file.
+	*/
 	TokenPosition position;
+
+	/**
+	*	The number of tokens used to define the node.
+	*/
 	int tokenSize;
 
+	/**
+	 * Create a node from a list of tokens
+	 * @param tokens The list to generate the node from.
+	 * Note: This should not be called. Instead, create a node from one of the inherited classes such as PageNode
+	 */
 	Node(Token *tokens);
+
+	/**
+	 * Create an empty node.
+	 * Note: should note be used. Instead, create a node from one of the inherited classes such as Pagenode
+	 */
 	Node();
 
 	virtual operator string() const;
 
+	/**
+	* Gets any children nodes.
+	*/
 	virtual vector<Node*> getChildren();
+
+	/**
+	*	Recursively gets all nodes that are under this node
+	*	@param includeChildScope Whether to get the children of blocks which have there own scope.
+	*/
 	virtual vector<Node*> getNestedChildren(bool includeChildScope=true);
+
+	/**
+	*	Recursively get all blocks that are children of this node
+	*/
 	virtual vector<BlockNode*> getNestedBlocks();
+
+	/**
+	*	The parent node
+	*/
 	Node *parent;
-	void runFunc(void (*func)(Node *node), bool includeChildScope=true);
+	//void runFunc(void (*func)(Node *node), bool includeChildScope=true);
 
 protected:
-	vector<Token> getOffset(Token *tokens, int offset);
+	//vector<Token> getOffset(Token *tokens, int offset);
 	BlockNode *getParentBlock();
 };
 
 class TypeNode: public Node {
 	public:
+	/**
+	*	Creates an empty TypeNode
+	*	note: Should not be called. Instead, use create(Token *tokens)
+	*/
 	TypeNode();
 
+	/**
+	*	Create a subclass of TypeNode from the tokens.
+	* @param tokens The array of tokens to create the node from
+	*/
 	static TypeNode *create(Token *tokens);
 
+	/**
+	*	Gets the children of this node.
+	*/
 	virtual vector<Node*> getChildren();
 
 	virtual bool operator == (const TypeNode& b);
@@ -73,8 +125,17 @@ class TypeNode: public Node {
 
 class StatementNode: public Node {
 	public:
+	/**
+	*	Creates an empty statement node
+	*	Note: should not be called. Instead, use StatementNode::create(Token *tokens);
+	*/
 	StatementNode();
 
+	/**
+	*	Creates a subclass of StatementNode from the tokens.
+	*	@param tokens The array of tokens to create the node from
+	*	@return One of the subsclasses of StatementNode
+	*/
 	static StatementNode *create(Token *tokens);
 
 	virtual operator string() const;
@@ -95,6 +156,7 @@ class BlockNode: public Node {
 	virtual vector<Node*> getChildren();
 
 	SymbolTable *getTable();
+	void setTable(SymbolTable *table);
 
 private:
 	SymbolTable *table;
@@ -162,6 +224,7 @@ class VarTypeNode: public TypeNode {
 
 	VarTypeNode(Token *tokens);
 	VarTypeNode();
+	VarTypeNode(string name);
 
 	virtual operator string() const;
 
@@ -177,6 +240,7 @@ class TemplateTypeNode: public VarTypeNode {
 	
 	TemplateTypeNode(Token *tokens);
 	TemplateTypeNode();
+	TemplateTypeNode(string name, vector<TypeNode*> types);
 
 	virtual operator string() const;
 
@@ -193,6 +257,7 @@ class FunctionTypeNode: public TypeNode {
 
 	FunctionTypeNode(Token *tokens);
 	FunctionTypeNode();
+	FunctionTypeNode(vector<TypeNode*> paramTypes, TypeNode *returnType);
 
 	virtual operator string() const;
 
@@ -209,6 +274,7 @@ class TemplateFunctionTypeNode: public FunctionTypeNode {
 
 	TemplateFunctionTypeNode(Token *tokens);
 	TemplateFunctionTypeNode();
+	TemplateFunctionTypeNode(vector<TypeNode*> paramTypes, vector<TypeNode*> templateParams, TypeNode *returnType);
 
 	virtual operator string() const;
 

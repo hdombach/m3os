@@ -65,6 +65,11 @@ FunctionTypeNode::FunctionTypeNode(Token *tokens) {
 	type = FUNCTIONTYPE_NODE;
 };
 
+FunctionTypeNode::FunctionTypeNode(vector<TypeNode*> paramTypes, TypeNode *returnType) {
+	this->params = paramTypes;
+	this->returnType = returnType;
+};
+
 FunctionTypeNode::operator string() const {
 	string result = "";
 	result += "params:\n";
@@ -86,7 +91,7 @@ vector <Node*> FunctionTypeNode::getChildren() {
 	vector<Node*> result;
 
 	for (int i = 0; i < params.size(); i++) {
-		result.push_back(&parent[i]);
+		result.push_back(params[i]);
 	}
 	result.push_back(returnType);
 

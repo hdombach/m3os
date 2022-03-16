@@ -11,6 +11,10 @@ VarTypeNode::VarTypeNode(Token *tokens): TypeNode() {
 	}
 };
 
+VarTypeNode::VarTypeNode(string name): TypeNode() {
+	this->name = name;
+};
+
 VarTypeNode::operator string() const {
 	 return "Var type (" + name + ")";
 }
