@@ -30,10 +30,19 @@ public:
 	operator string();
 
 	/**
-	* Gets the offset 
+	* Gets the offset of the given var
+	* @note returns -1 if the var is in a parent scope or does not exise
 	*/
 	int getMemoryOffset(string name); //(includes  functions)
+	
+	/**
+	*	Gets the offset of the frame pointer
+	*/
 	int getPrevFrameMemoryOffset();
+
+	/**
+	*	Gets the offset of the return value
+	*/
 	int getReturnOffset();
 
 	private:
