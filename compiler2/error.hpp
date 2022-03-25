@@ -11,6 +11,7 @@ void logError(string e);
 void logTokenError(Token t, string msg);
 void logTokenError(Token t, TokenType expected);
 void logTokenError(Token t, NodeType expected);
+void logInternalError(string e);
 string getErrors();
 int getErrorLength();
 void printErrors();

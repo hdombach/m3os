@@ -164,6 +164,8 @@ Token Token::createLabel(string s) {
 	map<string, TokenType> m;
 	m["var"] = VAR;
 	m["func"] = FUNC;
+	m["struct"] = STRUCT;
+	m["class"] = CLASS;
 	m["if"] = IF;
 	m["else"] = ELSE;
 	m["return"] = RETURN;

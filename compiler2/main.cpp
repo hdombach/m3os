@@ -24,6 +24,13 @@ void error_handler(int sig) {
 	exit(1);
 }
 
+void test(Node *node) {
+	cout << "node test\n";
+}
+void test(PageNode *node) {
+	cout << "page node test\n";
+}
+
 int main(int argc, char* argv[]) {
 	//signal(SIGBUS, error_handler);
 	//signal(SIGSEGV, error_handler);
@@ -56,6 +63,8 @@ int main(int argc, char* argv[]) {
 		auto table = tables[i];
 		cout << string(*table);
 	}
+
+	test(root);
 
 	cout << "Compiled with " + to_string(getErrorLength()) + " errors\n";
 	printErrors();

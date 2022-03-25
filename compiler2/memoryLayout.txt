@@ -1,0 +1,63 @@
+How the memory for a program is organized.
+Can be realocated if the space runs out
+Heap pointers are odd if full, even if empty
+
+
+
+
+
+
+Current stack end
+***
+***
+Current stack end
+Stack allocation (heap poitner)
+***
+***
+Stack allocation (heap pointer)
+Current frame pointer (points to current frame var)
+***
+***
+Current frame pointer
+Heap pointer
+***
+***
+Heap pointer
+code
+***
+***
+code
+Heap pointer
+***
+***
+Heap pointer
+Allocated memory
+***
+***
+Allocated memory
+Free stack memory
+***
+***
+Free stack memory
+temp stack
+***
+***
+temp stack
+current frame vars
+***
+***
+current frame vars
+params
+***
+***
+params
+Previous frame pointer
+***
+***
+Previous frame pointer
+return value
+***
+***
+return value
+temp stack
+***

@@ -25,6 +25,10 @@ void logTokenError(Token t, NodeType expected) {
 	logTokenError(t, "expected " + nodeTypeString(expected));
 }
 
+void logInternalError(string e) {
+	logError("INTERNAL: " + e);
+};
+
 string getErrors() {
 	string result = "";
 

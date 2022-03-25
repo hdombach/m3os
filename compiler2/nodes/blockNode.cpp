@@ -29,6 +29,10 @@ BlockNode::BlockNode(Token *tokens): Node() {
 	type = BLOCK_NODE;
 };
 
+BlockNode::BlockNode(vector<StatementNode *> statements): Node() {
+	this->statements = statements;
+};
+
 BlockNode::operator string() const {
 	string result = "";
 	for (int i = 0; i < statements.size(); i++) {
@@ -58,7 +62,7 @@ SymbolTable *BlockNode::getTable() {
 }
 
 void BlockNode::setTable(SymbolTable *table) {
-	if (this->table != nullptr) {
+	if (table != nullptr) {
 		logError("the table block is set more than once");
 	}
 	this->table = table;

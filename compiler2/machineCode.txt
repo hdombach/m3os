@@ -1,0 +1,40 @@
+Each instruction section will be 8 bits
+
+00: lod reg						; loads a value into a reg using address found at a0-a3
+01: sto reg						; stores a value from the reg using address a0-a3 
+02: add 							; o = x + y + c
+03: sub 							; o = x - y - c
+04: in reg  					; reads from an input into the reg (uses ch for channel)
+05: out reg 					; outputs from reg (uses ch for channel)
+06: tac reg 				   ; jump if negative. changes by value in a0-a3 
+07: jmp  			 				; changes program counter by value in a0-a3.
+08: and 							; o = x && y
+09: or								; o = x || y
+0a: not 							; o = !x
+0b: more 							; asks for more bytes (uses a0-a3)
+0c: sftr							; o = x >> 1
+0d: sftl 							; o = x << 1
+0e: mov reg1 reg2 		; reg1 = reg2
+0f: raw reg d
+10: goto 							; sets the program counter to the value in a0-a3
+
+
+Registers
+
+00: x
+01: y
+02: o
+03: c
+04: a0		;address reg
+05: a1
+06: a2
+07: a3
+08: p0		;program counter
+09: p1
+0a: p2
+0b: p3
+0c: ip
+od: op
+0e
+0f
+10-1f: general

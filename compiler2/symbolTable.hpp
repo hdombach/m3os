@@ -16,16 +16,29 @@ public:
 
 	void addVars(BlockNode *block);
 
+	void addDefinitions(BlockNode *block);
+
 	TypeNode *getVarType(string name, bool throwError = true);
 	TypeNode *getFunctionReturnType(string name, vector<TypeNode*> params, bool throwError = true);
+	DefFuncNode *getFunctionDefinition(string name, vector<TypeNode*> params);
+	DefStructNode *getStructDefinition(string name);
 	SymbolTable *getRootTable();
 	SymbolTable *getParent();
 
+	int getAllocatedSize();
+
 	operator string();
 
+	/**
+	* Gets the offset 
+	*/
+	int getMemoryOffset(string name); //(includes  functions)
+	int getPrevFrameMemoryOffset();
+	int getReturnOffset();
 
 	private:
 	vector<tuple<string, TypeNode*>> symbols;
+	vector<Node *> definitions;
 	SymbolTable *parent;
 	inline static SymbolTable *rootTable;
 	static void createRootTable();

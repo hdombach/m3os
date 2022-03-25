@@ -12,7 +12,6 @@ SymbolTable::SymbolTable() {};
 
 void SymbolTable::addFunctions(BlockNode *block) {
 	vector<Node*> children = block->getNestedChildren(false);
-	debug("size: " + to_string(children.size()) + ", " + to_string(block->getChildren().size()));
 	for (int i = 0; i < children.size(); i++) {
 		Node *child = children[i];
 		if (child->type == DEFFUNC_NODE) {
@@ -23,11 +22,20 @@ void SymbolTable::addFunctions(BlockNode *block) {
 
 void SymbolTable::addVars(BlockNode *block) {
 	vector<Node*> children = block->getNestedChildren(false);
-	debug("size: " + to_string(children.size()));
 	for (int i = 0; i < children.size(); i++) {
 		Node *child = children[i];
 		if (child->type == CREATEVAR_NODE) {
 			addVar(*(CreateVarNode *) child);
+		}
+	}
+};
+
+void SymbolTable::addDefinitions(BlockNode *block) {
+	vector<Node*> children = block->getNestedChildren(false);
+	for (int i = 0; i < children.size(); i++) {
+		Node *child = children[i];
+		if (child->type == DEFFUNC_NODE && child->type == DEFSTRUCT_NODE) {
+			definitions.push_back(child);
 		}
 	}
 };
@@ -80,6 +88,46 @@ TypeNode *SymbolTable::getFunctionReturnType(string name, vector<TypeNode *> par
 	return filtered[0];
 };
 
+DefFuncNode *SymbolTable::getFunctionDefinition(string name, vector<TypeNode*> params) {
+	for (int i = 0; i < definitions.size(); i++) {
+		Node *definition = definitions[i];
+		if (definition->type == DEFFUNC_NODE) {
+			DefFuncNode *funcDefinition = (DefFuncNode *) definition;
+			if (funcDefinition->name == name ) {
+				bool passed = true;
+				for (int j = 0; j < funcDefinition->params.size(); j++) {
+					if (funcDefinition->params[j].type != params[j]->type) {
+						passed = false;
+					}
+				}
+				if (passed) {
+					return funcDefinition;
+				}
+			}
+		}
+	}
+	if (getParent() != nullptr) {
+		return getParent()->getFunctionDefinition(name, params);
+	}
+	return NULL;
+};
+
+DefStructNode *SymbolTable::getStructDefinition(string name) {
+	for (int i = 0; i < definitions.size(); i++) {
+		Node *definition = definitions[i];
+		if (definition->type == DEFSTRUCT_NODE) {
+			DefStructNode *structDefinition = (DefStructNode *) definition;
+			if (structDefinition->name == name) {
+				return structDefinition;
+			}
+		}
+	}
+	if (getParent() != nullptr) {
+		return getParent()->getStructDefinition(name);
+	}
+	return NULL;
+};
+
 SymbolTable *SymbolTable::getRootTable() {
 	if (isRootTable) {
 		return NULL;
@@ -97,6 +145,18 @@ SymbolTable *SymbolTable::getParent() {
 	}
 }
 
+int SymbolTable::getAllocatedSize() {
+	int result = 0;
+	for (int i = 0; i < symbols.size(); i++) {
+		TypeNode *symbol = get<1>(symbols[i]);
+		if (symbol->type == VARTYPE_NODE || symbol->type == TEMPLATETYPE_NODE) {
+			DefStructNode *defStruct = getStructDefinition(get<0>(symbols[i]));
+			result += defStruct->getAllocatedSize();
+		}
+	};
+	return result;
+};
+
 SymbolTable::operator string() {
 	string result = "";
 	string name;
@@ -111,6 +171,48 @@ SymbolTable::operator string() {
 	}
 	return "Symbol table:\n" + indentString(result) + "\n";
 }
+
+int SymbolTable::getMemoryOffset(string name) {
+	int result = 0;
+	string tempName;
+	TypeNode *tempType;
+	for (int i = 0; i < symbols.size(); i++) {
+		tie(tempName, tempType) = symbols[i];
+		if (tempType->type == VARTYPE_NODE || tempType->type == TEMPLATETYPE_NODE) {
+			auto tempVarType = (VarTypeNode *) tempType;
+			if (tempVarType->name == name) {
+				return result;
+			};
+			result += getStructDefinition(tempVarType->name)->getAllocatedSize();
+		} else {
+			if (tempName == name) {
+				return result;
+			}
+			result += getStructDefinition("function")->getAllocatedSize();
+		};
+	};
+	return -1;
+};
+
+int SymbolTable::getPrevFrameMemoryOffset() {
+	int result = 0;
+	string tempName;
+	TypeNode *tempType;
+	for (int i = 0; i < symbols.size(); i++) {
+		tie(tempName, tempType) = symbols[i];
+		if (tempType->type == VARTYPE_NODE || tempType->type == TEMPLATETYPE_NODE) {
+			auto tempVarType = (VarTypeNode *) tempType;
+			result += getStructDefinition(tempVarType->name)->getAllocatedSize();
+		} else {
+			result += getStructDefinition("function")->getAllocatedSize();
+		}
+	};
+	return result;
+};
+
+int SymbolTable::getReturnOffset() {
+	return getPrevFrameMemoryOffset() + 2;
+};
 
 void SymbolTable::createRootTable() {
 	SymbolTable::rootTable = new SymbolTable();
@@ -176,14 +278,11 @@ void SymbolTable::addFunction(string name, vector<string> paramTypes, string res
 vector<TypeNode *> SymbolTable::getTypes(string name) {
 	vector<TypeNode *> result;
 
-	debug("m1");
-	debug("m1.1 " + to_string(symbols.size()));
 	for (int i = 0; symbols.size() > i; i++) {
 		if (get<0>(symbols[i]) == name) {
 			result.push_back(get<1>(symbols[i]));
 		}
 	}
-	debug("m2");
 	if (getParent() != nullptr) {
 		auto parentResult = getParent()->getTypes(name);
 		result.insert(result.end(), parentResult.begin(), parentResult.end());
@@ -200,6 +299,10 @@ vector<SymbolTable*> createAllTables(Node *root) {
 		result.push_back(table);
 		block->setTable(table);
 		table->addFunctions(block);
+	}
+	for (int i = 0; i < blocks.size(); i++) {
+		auto block = blocks[i];
+		block->getTable()->addVars(block);
 	}
 	for (int i = 0; i < blocks.size(); i++) {
 		auto block = blocks[i];

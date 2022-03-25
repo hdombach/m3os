@@ -16,6 +16,8 @@ enum TokenType {
 	CLOSECURLY,
 	VAR,
 	FUNC,
+	STRUCT,
+	CLASS,
 	COMMA,
 	EQUALS,
 	PERIOD,
