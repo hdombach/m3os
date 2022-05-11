@@ -2,11 +2,11 @@
 #include <vector>
 #include "../error.hpp"
 
-vector<uchar> loadCommand(uchar reg) {
-	return {COM_LOD, reg};
+vector<Command *> loadCommand(uchar reg) {
+	return {new Command(COM_LOD, {reg})};
 }
 
-vector<uchar> loadCommand(uchar reg, uchar byteLength, uchar tempReg) {
+vector<Command *> loadCommand(uchar reg, uchar byteLength, uchar tempReg) {
 	int limit = REG_MAX + 1 - byteLength;
 	if (reg > limit) {
 		logInternalError("reg to high for loadCommand");
@@ -27,14 +27,14 @@ vector<uchar> loadCommand(uchar reg, uchar byteLength, uchar tempReg) {
 	return result;
 };
 
-vector<uchar> loadStackCommand(uchar reg, uchar byteLength, uchar tempReg) {
+vector<Command *> loadStackCommand(uchar reg, uchar byteLength, uchar tempReg) {
 	auto result = getStackEndAdrCommand(tempReg);
 	append(result, loadCommand(reg, byteLength, tempReg));
 	return result;
 }
 
-vector<uchar> loadConstCommand(uchar reg, unsigned int adr) {
+vector<Command *> loadConstCommand(uchar reg, unsigned int adr, uchar byteLength, uchar tempReg) {
 	auto result = rawCommand(REG_A0, adr);
-	append(result, loadCommand(reg));
+	append(result, loadCommand(reg, byteLength, tempReg));
 	return result;
 };

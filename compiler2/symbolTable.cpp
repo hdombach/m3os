@@ -145,13 +145,33 @@ SymbolTable *SymbolTable::getParent() {
 	}
 }
 
-int SymbolTable::getAllocatedSize() {
+bool SymbolTable::isRoot() {
+	return isRootTable;
+};
+
+int SymbolTable::getAllocatedSize(string name) {
+	auto tempType = getVarType(name);
+	if (tempType->type == VARTYPE_NODE || TEMPLATETYPE_NODE) {
+		auto varType = (VarTypeNode *) tempType;
+		return getStructDefinition(varType->name)->getAllocatedSize();
+	} else {
+		return getStructDefinition("function")->getAllocatedSize();
+	}
+};
+
+int SymbolTable::getAllocatedSize(string name, vector<TypeNode *> params) {
+	return getStructDefinition("funciton")->getAllocatedSize();
+};
+
+int SymbolTable::getTotalAllocatedSize() {
 	int result = 0;
 	for (int i = 0; i < symbols.size(); i++) {
 		TypeNode *symbol = get<1>(symbols[i]);
 		if (symbol->type == VARTYPE_NODE || symbol->type == TEMPLATETYPE_NODE) {
 			DefStructNode *defStruct = getStructDefinition(get<0>(symbols[i]));
 			result += defStruct->getAllocatedSize();
+		} else {
+			result += getStructDefinition("function")->getAllocatedSize();
 		}
 	};
 	return result;
@@ -189,6 +209,26 @@ int SymbolTable::getMemoryOffset(string name) {
 				return result;
 			}
 			result += getStructDefinition("function")->getAllocatedSize();
+		};
+	};
+	return -1;
+};
+
+int SymbolTable::getMemoryOffset(string name, vector<TypeNode*> params) {
+	int result = 0;
+	string tempName;
+	TypeNode *tempType;
+	for (int i = 0; i < symbols.size(); i++) {
+		tie(tempName, tempType) = symbols[i];
+		if (tempType->tokenSize == FUNCTIONTYPE_NODE || tempType->tokenSize == TEMPLATEFUNCTIONTYPE_NODE) {
+			auto tempFunctionType = (FunctionTypeNode *) tempType;
+			if (tempName == name && tempFunctionType->params == params) {
+				return result;
+			}
+			result += getStructDefinition("function")->getAllocatedSize();
+		} else {
+			auto tempVarType = (VarTypeNode *) tempType;
+			result += getStructDefinition(tempVarType->name)->getAllocatedSize();
 		};
 	};
 	return -1;

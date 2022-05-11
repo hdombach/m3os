@@ -73,5 +73,5 @@ vector<Node*> DefStructNode::getChildren() {
 };
 
 int DefStructNode::getAllocatedSize() {
-	return content->getTable()->getAllocatedSize();
+	return content->getTable()->getTotalAllocatedSize();
 };

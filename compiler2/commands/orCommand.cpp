@@ -4,11 +4,11 @@
 
 using namespace std;
 
-vector<uchar> orCommand() {
-	return {COM_OR};
+vector<Command *> orCommand() {
+	return {new Command(COM_OR)};
 };
 
-vector<uchar> orCommand(uchar aReg, uchar bReg, uchar outReg, uchar byteLength) {
+vector<Command *> orCommand(uchar aReg, uchar bReg, uchar outReg, uchar byteLength) {
 	int limit = REG_MAX + 1 - byteLength;
 
 	if (aReg > limit) {
@@ -24,7 +24,7 @@ vector<uchar> orCommand(uchar aReg, uchar bReg, uchar outReg, uchar byteLength) 
 		return {};
 	}
 
-	vector<uchar> result;
+	vector<Command *> result;
 
 	for (int i = 0; i < byteLength; i++) {
 		append(result, moveCommand(REG_X, aReg + i));
@@ -36,7 +36,7 @@ vector<uchar> orCommand(uchar aReg, uchar bReg, uchar outReg, uchar byteLength) 
 	return result;
 };
 
-vector<uchar> orStackCommand(uchar byteLength) {
+vector<Command *> orStackCommand(uchar byteLength) {
 	auto result = loadStackCommand(REG_0, byteLength, REG_16);
 	append(result, popConstCommand(byteLength, REG_16));
 	append(result, loadStackCommand(REG_8, byteLength, REG_16));

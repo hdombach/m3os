@@ -77,3 +77,31 @@ ExpressionNode::operator string() const {
 vector<Node*> ExpressionNode::getChildren() {return vector<Node*>();};
 
 TypeNode *ExpressionNode::getResultType() {return new TypeNode();};
+
+bool ExpressionNode::isChild(NodeType type) {
+	if (type == OPERATION_NODE) {
+		return true;
+	}
+	if (type == FLOAT_NODE) {
+		return true;
+	}
+	if (type == INT_NODE) {
+		return true;
+	}
+	if (type == STRING_NODE) {
+		return true;
+	}
+	if (type == FUNCTIONCALL_NODE) {
+		return true;
+	}
+	if (type == POINTER_NODE) {
+		return true;
+	}
+	if (type == GETPOINTER_NODE) {
+		return true;
+	}
+	if (type == GETVAR_NODE) {
+		return true;
+	}
+	return false;
+};

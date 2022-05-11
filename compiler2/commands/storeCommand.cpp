@@ -2,11 +2,11 @@
 #include <vector>
 #include "../error.hpp"
 
-vector<uchar> storeCommand(uchar reg) {
-	return {COM_STO, reg};
+vector<Command *> storeCommand(uchar reg) {
+	return {new Command(COM_STO, {reg})};
 };
 
-vector<uchar> storeCommand(uchar reg, uchar byteLength, uchar tempReg) {
+vector<Command *> storeCommand(uchar reg, uchar byteLength, uchar tempReg) {
 	int limit = REG_MAX + 1 - byteLength;
 	if (reg >  limit) {
 		logInternalError("reg to ghigh for storeCommand");
@@ -26,14 +26,14 @@ vector<uchar> storeCommand(uchar reg, uchar byteLength, uchar tempReg) {
 	return result;
 };
 
-vector<uchar> storeStackCommand(uchar reg, uchar byteLength, uchar tempReg) {
-	auto result = getStackEndCommand(tempReg);
+vector<Command *> storeStackCommand(uchar reg, uchar byteLength, uchar tempReg) {
+	auto result = getStackEndAdrCommand(tempReg);
 	append(result, storeCommand(reg, byteLength, tempReg));
 	return result;
 };
 
-vector<uchar> storeConstCommand(uchar reg, unsigned int adr) {
+vector<Command *> storeConstCommand(uchar reg, unsigned int adr, uchar byteLength, uchar tempReg) {
 	auto result = rawCommand(REG_A0, adr);
-	append(result, storeCommand(reg));
+	append(result, storeCommand(reg, byteLength, tempReg));
 	return result;
 };

@@ -4,9 +4,9 @@
 
 using namespace std;
 
-vector<uchar> shiftlCommand();
+vector<Command *> shiftlCommand();
 
-vector<uchar> shiftlCommand(uchar reg, uchar outReg, uchar byteLength) {
+vector<Command *> shiftlCommand(uchar reg, uchar outReg, uchar byteLength) {
 	int limit = REG_MAX + 1 - byteLength;
 
 	if (reg > limit) {
@@ -18,7 +18,7 @@ vector<uchar> shiftlCommand(uchar reg, uchar outReg, uchar byteLength) {
 		return {};
 	};
 
-	vector<uchar> result;
+	vector<Command *> result;
 
 	for (int i = 0; i < byteLength; i++) {
 		append(result, moveCommand(REG_X, reg + i));
@@ -29,7 +29,7 @@ vector<uchar> shiftlCommand(uchar reg, uchar outReg, uchar byteLength) {
 	return result;
 };
 
-vector<uchar> shiftlStackCommand(uchar byteLength) {
+vector<Command *> shiftlStackCommand(uchar byteLength) {
 	auto result = loadStackCommand(REG_0, byteLength, REG_16);
 	append(result, shiftlCommand(REG_0, REG_0, byteLength));
 	append(result, storeStackCommand(REG_0, byteLength, REG_16));

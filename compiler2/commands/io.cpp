@@ -3,23 +3,24 @@
 
 using namespace std;
 
-vector<uchar> inputCommand(uchar reg) {
-	return {COM_IN};
+vector<Command *> inputCommand(uchar reg) {
+	return {new Command(COM_IN, {reg})};
 };
-vector<uchar> inputCommand(uchar reg, uchar channel) {
+
+vector<Command *> inputCommand(uchar reg, uchar channel) {
 	auto result = rawCommand(REG_IP, channel);
 	append(result, inputCommand(reg));
 	return result;
 };
 
-vector<uchar> outputCommand(uchar reg) {
-	return {COM_OUT};
+vector<Command *> outputCommand(uchar reg) {
+	return {new Command(COM_OUT, {reg})};
 };
-vector<uchar> outputCommand(uchar reg, uchar channel) {
+vector<Command *> outputCommand(uchar reg, uchar channel) {
 	auto result = rawCommand(REG_OP, channel);
 	append(result, outputCommand(reg));
 	return result;
 };
-vector<uchar> printCommand(uchar reg) {
+vector<Command *> printCommand(uchar reg) {
 	return outputCommand(reg, 0);
 };

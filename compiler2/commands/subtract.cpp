@@ -4,11 +4,11 @@
 
 using namespace std;
 
-vector<uchar> subtractCommand() {
-	return {COM_SUB};
+vector<Command *> subtractCommand() {
+	return {new Command(COM_SUB)};
 }
 
-vector<uchar> subtractCommand(uchar aReg, uchar bReg, uchar outReg, uchar byteLength) {
+vector<Command *> subtractCommand(uchar aReg, uchar bReg, uchar outReg, uchar byteLength) {
 	int limit = REG_MAX + 1 - byteLength;
 
 	if  (aReg > limit) {
@@ -24,11 +24,11 @@ vector<uchar> subtractCommand(uchar aReg, uchar bReg, uchar outReg, uchar byteLe
 		return {};
 	}
 
-	vector<uchar> result = rawCommand(REG_C, 0);
+	vector<Command *> result = rawCommand(REG_C, (uchar) 0);
 
 	for (int i = 0; i < byteLength; i++) {
 		append(result, moveCommand(REG_X, aReg + i));
-		append(result, moveCommand(REG_Y, bReg + i, REG_Y));
+		append(result, moveCommand(REG_Y, bReg + i));
 		append(result, subtractCommand());
 		append(result, moveCommand(outReg + i, REG_O));
 	}
@@ -38,7 +38,7 @@ vector<uchar> subtractCommand(uchar aReg, uchar bReg, uchar outReg, uchar byteLe
 };
 
 
-vector<uchar> subtractStackCommand(uchar byteLength) {
+vector<Command *> subtractStackCommand(uchar byteLength) {
 	auto result = loadStackCommand(REG_0, byteLength, REG_16);
 	append(result, popConstCommand(byteLength, REG_16));
 	append(result, loadStackCommand(REG_8, byteLength, REG_16));

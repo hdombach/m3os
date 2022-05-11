@@ -12,10 +12,19 @@ class SymbolTable {
 public:
 	SymbolTable();
 
+	/**
+	 *	Adds the function defintions in the provided block
+	 */
 	void addFunctions(BlockNode *block);
 
+	/**
+	 *	Adds the var definitions in the provided block
+	 */
 	void addVars(BlockNode *block);
 
+	/**
+	 *	Adds the struct definitions in the provided block
+	 */
 	void addDefinitions(BlockNode *block);
 
 	TypeNode *getVarType(string name, bool throwError = true);
@@ -25,7 +34,12 @@ public:
 	SymbolTable *getRootTable();
 	SymbolTable *getParent();
 
-	int getAllocatedSize();
+	bool isRoot();
+
+	int getAllocatedSize(string name);
+	int getAllocatedSize(string name, vector<TypeNode *> params);
+
+	int getTotalAllocatedSize();
 
 	operator string();
 
@@ -34,6 +48,8 @@ public:
 	* @note returns -1 if the var is in a parent scope or does not exise
 	*/
 	int getMemoryOffset(string name); //(includes  functions)
+
+	int getMemoryOffset(string name, vector<TypeNode*> params);
 	
 	/**
 	*	Gets the offset of the frame pointer

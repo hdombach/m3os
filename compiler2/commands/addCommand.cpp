@@ -4,11 +4,11 @@
 
 using namespace std;
 
-vector<uchar> addCommand() {
-	return {COM_ADD};
+vector<Command *> addCommand() {
+	return {new Command(COM_ADD)};
 };
 
-vector<uchar> addCommand(uchar aReg, uchar bReg, uchar outReg, uchar byteLength) {
+vector<Command *> addCommand(uchar aReg, uchar bReg, uchar outReg, uchar byteLength) {
 	int limit = REG_MAX + 1 - byteLength;
 
 	if  (aReg > limit) {
@@ -25,7 +25,7 @@ vector<uchar> addCommand(uchar aReg, uchar bReg, uchar outReg, uchar byteLength)
 	}
 
 	unsigned int zero = 0;
-	vector<uchar> result = rawCommand(REG_C, zero);
+	vector<Command *> result = rawCommand(REG_C, zero);
 
 	for (int i = 0; i < byteLength; i++) {
 		append(result, moveCommand(REG_X, aReg + i));
@@ -37,7 +37,7 @@ vector<uchar> addCommand(uchar aReg, uchar bReg, uchar outReg, uchar byteLength)
 	return result;
 };
 
-vector<uchar> addStackCommand(uchar byteLength) {
+vector<Command *> addStackCommand(uchar byteLength) {
 	auto result = loadStackCommand(REG_0, byteLength, REG_16);
 	append(result, popConstCommand(byteLength, REG_16));
 	append(result, loadStackCommand(REG_8, byteLength, REG_16));

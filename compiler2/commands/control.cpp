@@ -4,10 +4,11 @@
 
 using namespace std;
 
-vector<uchar> tacCommand(uchar reg) {
-	return {COM_TAC, reg};
+vector<Command *> tacCommand(uchar reg) {
+	return {new Command(COM_TAC, {reg})};
 };
-vector<uchar> tacCommand(uchar reg, uchar diffReg) {
+
+vector<Command *> tacCommand(uchar reg, uchar diffReg) {
 	int limit = REG_MAX - 3;
 	if (diffReg > limit) {
 		logInternalError("diffReg to high for tacCommand");
@@ -17,10 +18,10 @@ vector<uchar> tacCommand(uchar reg, uchar diffReg) {
 	return result;
 };
 
-vector<uchar> jumpCommand() {
-	return {COM_JMP};
+vector<Command *> jumpCommand() {
+	return {new Command(COM_JMP)};
 };
-vector<uchar> jumpCommand(uchar diffReg) {
+vector<Command *> jumpCommand(uchar diffReg) {
 	int limit = REG_MAX - 3;
 	if (diffReg > limit) {
 		logInternalError("diffReg to high for jumpCommand");

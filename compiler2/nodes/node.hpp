@@ -42,6 +42,7 @@ enum NodeType {
 };
 
 class BlockNode;
+class Command;
 
 /**
 	*	A generic node for the syntax tree.
@@ -67,13 +68,13 @@ public:
 	/**
 	 * Create a node from a list of tokens
 	 * @param tokens The list to generate the node from.
-	 * Note: This should not be called. Instead, create a node from one of the inherited classes such as PageNode
+	 * @note This should not be called. Instead, create a node from one of the inherited classes such as PageNode
 	 */
 	Node(Token *tokens);
 
 	/**
 	 * Create an empty node.
-	 * Note: should note be used. Instead, create a node from one of the inherited classes such as Pagenode
+	 * @note should note be used. Instead, create a node from one of the inherited classes such as Pagenode
 	 */
 	Node();
 
@@ -101,7 +102,6 @@ public:
 	Node *parent;
 	//void runFunc(void (*func)(Node *node), bool includeChildScope=true);
 
-protected:
 	//vector<Token> getOffset(Token *tokens, int offset);
 	BlockNode *getParentBlock();
 };
@@ -136,7 +136,7 @@ class StatementNode: public Node {
 	public:
 	/**
 	*	Creates an empty statement node
-	*	Note: should not be called. Instead, use StatementNode::create(Token *tokens);
+	*	@note should not be called. Instead, use StatementNode::create(Token *tokens);
 	*/
 	StatementNode();
 
@@ -163,6 +163,8 @@ class BlockNode: public Node {
 	*/
 	vector<StatementNode *> statements;
 
+	vector<Command *> createdCommands;
+
 	/**
 	*	Creates a block node from a list of tokens
 	*	@param tokens The array of tokens to create the block from
@@ -170,7 +172,7 @@ class BlockNode: public Node {
 	BlockNode(Token *tokens);
 	/**
 	*	Creates an empty block node.
-	*	Note: should use BlockNode(Token *tokens) instead.
+	*	@note should use BlockNode(Token *tokens) instead.
 	*/
 	BlockNode();
 
@@ -216,7 +218,7 @@ class PageNode: public Node {
 	
 	/**
 	*	Creats an empty page node.
-	*	Note: should use PageNode(Token *tokens) instead.
+	*	@note should use PageNode(Token *tokens) instead.
 	*/
 	PageNode();
 
@@ -257,6 +259,11 @@ class ExpressionNode: public StatementNode {
 	*	Gets the children of this node.
 	*/
 	virtual vector<Node*> getChildren();
+
+	/**
+	 *	Returns whether a type is an expression or not
+	 */
+	static bool isChild(NodeType type);
 };
 
 /**
@@ -288,7 +295,7 @@ class CreateVarNode: public StatementNode {
 
 	/**
 	*	Creates an empty CreateVarNode
-	*	Note: should use CreateVarNode(Token *tokens)
+	*	@note should use CreateVarNode(Token *tokens)
 	*/
 	CreateVarNode();
 
@@ -330,7 +337,7 @@ class DefParamNode: public Node {
 
 	/**
 	* Creates an empty Defparam node
-	* Note: should use DefParam(Token *tokens) instead.
+	* @note should use DefParam(Token *tokens) instead.
 	*/
 	DefParamNode();
 
@@ -360,7 +367,7 @@ class VarTypeNode: public TypeNode {
 
 	/**
 	*	Creates an empty VarType node.
-	*	Note: should use VarTypeNode(Token *tokens) or VarTypeNode(string name) instead
+	*	@note should use VarTypeNode(Token *tokens) or VarTypeNode(string name) instead
 	*/
 	VarTypeNode();
 
@@ -399,7 +406,7 @@ class TemplateTypeNode: public VarTypeNode {
 
 	/**
 	*	Creates an empty TemplateType node.
-	*	Note: should use TemplateTypeNode(Token *tokens) or TemplateTypeNode(string name, vector<TypeNode*> types) instead.
+	*	@note should use TemplateTypeNode(Token *tokens) or TemplateTypeNode(string name, vector<TypeNode*> types) instead.
 	*/
 	TemplateTypeNode();
 
@@ -451,7 +458,7 @@ class FunctionTypeNode: public TypeNode {
 
 	/**
 	* Creates an empty FunctionType node
-	* Note: should use FunctionTypeNode(Token *tokens) or FunctionTypeNode(vector<TypeNode*> paramTypes, TypeNode *returnType) instead
+	* @note should use FunctionTypeNode(Token *tokens) or FunctionTypeNode(vector<TypeNode*> paramTypes, TypeNode *returnType) instead
 	*/
 	FunctionTypeNode();
 
@@ -472,64 +479,172 @@ class FunctionTypeNode: public TypeNode {
 	virtual bool operator == (const FunctionTypeNode &b);
 };
 
-//()<> -> ()
+/**
+	*	The type that represents a tempate functions
+	*	Format looks like (params)<temlate> => type
+	*/
 class TemplateFunctionTypeNode: public FunctionTypeNode {
 	public:
 
+	/**
+	* The types for the templates
+	*/
 	vector<TypeNode*> templateParams;
 
+	/**
+	* Creaes a FunctionType node from a list of tokens
+	* @param tokens The list of tokens
+	*/
 	TemplateFunctionTypeNode(Token *tokens);
+	
+	/**
+	*	Creates an empty TemplateFunctionType node
+	*	@note should use FunctionTypeNode(Token *tokens) or TemplateFunctionTypeNode(vector<TypeNode*> paramTypes, vector<TypeNode*> templateParams, TypeNode *returnType) instead.
+	*/
 	TemplateFunctionTypeNode();
+	/**
+	*	Creates a TemplateFunctionType node from the prodid info
+	*	@param paramTypes the types of the params
+	*	@param templateParams the types for the template
+	*	@param returnType The expected return type
+	*/
 	TemplateFunctionTypeNode(vector<TypeNode*> paramTypes, vector<TypeNode*> templateParams, TypeNode *returnType);
 
 	virtual operator string() const;
 
+	/**
+	* Returns any children
+	*/
 	virtual vector<Node*> getChildren();
 
 	virtual bool operator == (const TemplateFunctionTypeNode &b);
 };
 
+/**
+	*	A function that representes a function definition
+	*/
 class DefFuncNode: public StatementNode {
 	public:
+	/**
+	*	The name of the function
+	*/
 	string name;
+	/**
+	*	The list of param definitions
+	*/
 	vector<DefParamNode> params;
+	/**
+	*	The provided return type
+	*	Can be null
+	*/
 	VarTypeNode *returnType;
+	/**
+	*	The contents of the definition
+	*/
 	BlockNode block;
+	/**
+	*	Whether this function should be handleded as an operatos.
+	*	Operations are handeled slightly different from normal functions as they need to be exposed the the root scope
+	*/
 	bool isOperator = false;
 
+	/**
+	*	Creates a DefFunc node from a list of tokens
+	*	@param tokens The list of tokens
+	*/
 	DefFuncNode(Token *tokens);
+	/**
+	*	Creates and empty DefFunc node
+	*	@note should use DefFuncNode(Token *tokens) instead
+	*/
 	DefFuncNode();
 
 	virtual operator string() const;
 
+	/**
+	*	Gets the function type that describes this function
+	*/
 	TypeNode *getFuncType();
 
+	/**
+	* Returns any children
+	*/
 	virtual vector<Node*> getChildren();
 };
 
+/**
+	*	A function that represents a struct Definition
+	*/
 class DefStructNode: public StatementNode {
 public:
+	/**
+	*	The name of the struct
+	*/
 	string name;
+	/**
+	*	The ocntents of the struct
+	*/
 	BlockNode *content;
 
+	/**
+	*	Creates a DefStruct node from a list of tokens
+	*	@params tokens The list of tokens
+	*/
 	DefStructNode(Token *tokens);
+	/**
+	*	Creates an empty DefSTruct node.
+	*	@note should use one of the other constructors
+	*/
 	DefStructNode();
+	/**
+	*	Creates a DefStruct node with the provided info
+	*	@param name The provided name
+	*	@param content The provided block
+	*/
 	DefStructNode(string name, BlockNode *content);
+	/**
+	*	Creates a DefSTruct node with the provided info
+	*	@param name The provded name
+	*	@param definitions The statemetns with which to create the content
+	*/
 	DefStructNode(string name, vector<StatementNode*> definitions);
 
 	virtual operator string() const;
 
+	/**
+	*	Gets any children
+	*/
 	virtual vector<Node*> getChildren();
 
+	/**
+	*	Gets the bytes required by this struct
+	*/
 	virtual int getAllocatedSize();
 };
 
+/**
+	*	A function that represents a set var operation
+	*/
 class SetVarNode: public StatementNode {
 	public:
+	/**
+	*	The name of the var to set
+	*/
 	string name;
+	/**
+	* The expression to set the var to.
+	*/
 	ExpressionNode *expression;
 
+	/**
+	* Creates a SetVar node from a list of tokens
+	* @param tokens The list of tokens
+	*/
 	SetVarNode(Token *tokens);
+	/**
+	* Creates an empty SetVar node
+	* @note Should use SetVarNode(Token *tokens)
+	*/
 	SetVarNode();
 
 	operator string() const;
@@ -537,29 +652,70 @@ class SetVarNode: public StatementNode {
 	virtual vector<Node*> getChildren();
 };
 
+/**
+	*	A function that represents setting an pointer.
+	*/
 class SetPointerNode: public StatementNode {
 	public:
+
+	/**
+	*	The expression for the pointer
+	*/
 	ExpressionNode *pointerExpression;
+	/**
+	*	The expression for the value
+	*/
 	ExpressionNode *expression;
 
+	/**
+	*	Creates a setPointer node from a list of tokens
+	*	@param tokens The list of tokens
+	*/
 	SetPointerNode(Token *tokens);
+	/**
+	*	Creates an empty SetPointer node
+	*	@note should use SetPointerNode(Token *token)
+	*/
 	SetPointerNode();
 
 	operator string() const;
 
+	/**
+	*	Returns any children
+	*/
 	virtual vector<Node*> getChildren();
 };
 
 class IfNode: public StatementNode {
 	public:
+
+	/**
+	*	The boolean expression
+	*/
 	ExpressionNode *expression;
+	
+	/**
+	*	The value to read if the expression is true
+	*/
 	BlockNode block;
 
+	/**
+	* Creates an if node from a list of tokens
+	* @param tokens The list of tokens
+	*/
 	IfNode(Token *tokens);
+
+	/**
+	*	Creates an empty if node
+	*	@note should use IfNode(Token *token) in most cases
+	*/
 	IfNode();
 
 	operator string() const;
 
+	/**
+	*
+	*/
 	virtual vector<Node*> getChildren();
 };
 
@@ -624,6 +780,8 @@ class FloatNode: public ExpressionNode {
 	virtual vector<Node*> getChildren();
 
 	virtual TypeNode *getResultType();
+
+	float getValue();
 };
 
 class IntNode: public ExpressionNode {
